@@ -1,0 +1,291 @@
+/* ============================================
+   WebGIS SMA Negeri Lampung Tengah
+   Simpan di: Assets/css/style.css
+   ============================================ */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: #f5f3ff;
+  color: #1e1b4b;
+  min-height: 100vh;
+  padding: 1.5rem;
+}
+
+/* ══ JUDUL HALAMAN ══ */
+.page-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+.page-header h1 {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #6d28d9;
+  margin-bottom: 4px;
+}
+.page-header p {
+  font-size: 0.85rem;
+  color: #7c3aed;
+  opacity: 0.8;
+}
+
+/* ══ KARTU STATISTIK ══ */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.stat-card {
+  background: white;
+  border: 1.5px solid #ddd6fe;
+  border-radius: 14px;
+  padding: 1.2rem 1.5rem;
+  box-shadow: 0 2px 12px rgba(124,58,237,0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(124,58,237,0.18);
+}
+.stat-card .sc-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #7c3aed;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+}
+.stat-card .sc-value {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #6d28d9;
+  line-height: 1;
+}
+.stat-card .sc-sub {
+  font-size: 0.75rem;
+  color: #8b5cf6;
+  margin-top: 4px;
+  opacity: 0.8;
+}
+
+/* ══ JUDUL PETA ══ */
+.map-section-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #6d28d9;
+  margin-bottom: 4px;
+}
+.map-section-sub {
+  font-size: 0.82rem;
+  color: #7c3aed;
+  opacity: 0.8;
+  margin-bottom: 0.9rem;
+}
+
+/* ══ LAYOUT PETA ══ */
+.map-layout {
+  display: flex;
+  gap: 1rem;
+  height: 500px;
+}
+
+/* ── Sidebar ── */
+.map-sidebar {
+  width: 235px;
+  flex-shrink: 0;
+  background: white;
+  border: 1.5px solid #ddd6fe;
+  border-radius: 14px;
+  padding: 1rem;
+  overflow-y: auto;
+  box-shadow: 0 2px 12px rgba(124,58,237,0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Search */
+#search-input {
+  width: 100%;
+  padding: 0.5rem 0.8rem;
+  border: 1.5px solid #ddd6fe;
+  border-radius: 8px;
+  font-size: 0.83rem;
+  font-family: inherit;
+  outline: none;
+  background: #f5f3ff;
+  margin-bottom: 0.6rem;
+  transition: border-color 0.2s;
+}
+#search-input:focus { border-color: #7c3aed; }
+
+/* Section label */
+.sb-title {
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #7c3aed;
+  border-bottom: 1.5px solid #ddd6fe;
+  padding-bottom: 0.35rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Tombol basemap */
+.btn-group { display: flex; gap: 5px; margin-bottom: 0.6rem; }
+.map-btn {
+  flex: 1;
+  padding: 0.36rem 0.2rem;
+  font-size: 0.75rem;
+  font-family: inherit;
+  font-weight: 600;
+  border: 1.5px solid #ddd6fe;
+  border-radius: 7px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.map-btn:hover  { border-color: #7c3aed; color: #6d28d9; }
+.map-btn.active { background: #6d28d9; color: white; border-color: #6d28d9; }
+
+/* Daftar sekolah */
+#school-list { list-style: none; display: flex; flex-direction: column; gap: 3px; }
+#school-list li {
+  padding: 0.45rem 0.6rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  line-height: 1.4;
+  transition: all 0.18s;
+}
+#school-list li:hover  { background: #f5f3ff; border-color: #c4b5fd; }
+#school-list li.aktif  { background: #ede9fe; border-color: #7c3aed; font-weight: 700; color: #6d28d9; }
+#school-list li.tersembunyi { display: none; }
+#school-list li .nama-kec { font-size: 0.68rem; color: #8b5cf6; display: block; margin-top: 1px; }
+
+/* Legenda */
+.sb-legend { margin-top: auto; padding-top: 0.8rem; border-top: 1px solid #ddd6fe; }
+.leg-item  { display: flex; align-items: center; gap: 6px; font-size: 0.75rem; color: #7c3aed; margin-bottom: 4px; }
+.leg-dot   { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+/* ── Area Peta ── */
+.map-wrap {
+  flex: 1;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1.5px solid #ddd6fe;
+  box-shadow: 0 2px 12px rgba(124,58,237,0.1);
+  position: relative;
+}
+#map { width: 100%; height: 100%; }
+
+/* Koordinat bar */
+.koordinat-bar {
+  position: absolute;
+  bottom: 10px; left: 10px;
+  background: rgba(255,255,255,0.92);
+  border: 1px solid #ddd6fe;
+  border-radius: 99px;
+  padding: 4px 12px;
+  font-size: 0.72rem;
+  color: #6d28d9;
+  font-weight: 600;
+  z-index: 500;
+  pointer-events: none;
+}
+
+/* ── Panel Detail ── */
+#detail-panel {
+  position: absolute;
+  top: 10px; right: 10px;
+  width: 255px;
+  background: white;
+  border-radius: 12px;
+  border: 1.5px solid #ddd6fe;
+  box-shadow: 0 6px 24px rgba(124,58,237,0.18);
+  z-index: 600;
+  overflow: hidden;
+  animation: slideIn 0.22s ease;
+}
+#detail-panel.hidden { display: none; }
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.dp-header {
+  background: linear-gradient(135deg, #6d28d9, #7c3aed);
+  padding: 0.9rem 1rem;
+  color: white;
+  position: relative;
+}
+.dp-header .dp-icon { font-size: 1.3rem; margin-bottom: 3px; }
+.dp-header .dp-nama { font-size: 0.88rem; font-weight: 800; line-height: 1.25; padding-right: 30px; }
+
+#close-panel {
+  position: absolute; top: 8px; right: 8px;
+  background: rgba(255,255,255,0.2);
+  border: none; border-radius: 5px;
+  padding: 2px 8px; font-size: 0.72rem;
+  cursor: pointer; color: white;
+}
+#close-panel:hover { background: rgba(255,255,255,0.35); }
+
+.dp-body { padding: 0.9rem 1rem; }
+.dp-row {
+  display: flex; gap: 6px;
+  font-size: 0.8rem; padding: 0.28rem 0;
+  border-bottom: 1px solid #f5f3ff;
+  align-items: flex-start;
+}
+.dp-row:last-child { border-bottom: none; }
+.dp-lbl { color: #8b5cf6; font-size: 0.7rem; width: 80px; flex-shrink: 0; }
+.dp-val { font-weight: 600; color: #1e1b4b; }
+
+/* ══ TABEL ══ */
+.table-section { margin-top: 1.5rem; }
+.table-title {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #6d28d9;
+  margin-bottom: 0.8rem;
+}
+.tbl-wrap {
+  background: white;
+  border: 1.5px solid #ddd6fe;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(124,58,237,0.1);
+}
+table { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+thead th {
+  background: linear-gradient(90deg, #6d28d9, #7c3aed);
+  color: white; padding: 0.7rem 1rem;
+  text-align: left; font-size: 0.74rem;
+  text-transform: uppercase; letter-spacing: 0.06em;
+}
+tbody td { padding: 0.58rem 1rem; border-bottom: 1px solid #ede9fe; }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:nth-child(even) td { background: #f5f3ff; }
+tbody tr:hover td { background: #ede9fe; }
+
+/* ══ POPUP LEAFLET ══ */
+.leaflet-popup-content-wrapper {
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(124,58,237,0.2);
+  padding: 0;
+}
+.leaflet-popup-content { margin: 0; font-family: 'Segoe UI', Arial, sans-serif; }
+.isi-popup { padding: 10px 14px; }
+.isi-popup strong { color: #6d28d9; font-size: 0.87rem; display: block; margin-bottom: 3px; }
+.isi-popup span   { font-size: 0.77rem; color: #7c3aed; }
+
+/* ══ RESPONSIVE ══ */
+@media (max-width: 700px) {
+  .stats-row  { grid-template-columns: 1fr; }
+  .map-layout { flex-direction: column; height: auto; }
+  .map-sidebar { width: 100%; height: 180px; }
+  .map-wrap   { height: 380px; }
+}

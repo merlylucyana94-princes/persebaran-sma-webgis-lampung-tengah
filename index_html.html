@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGIS Persebaran SMA Negeri – Lampung Tengah</title>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+
+    <style>
+        /* ══ RESET ══ */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', Arial, sans-serif;
+            background: #eff6ff;
+            color: #1e3a8a;
+        }
+
+        /* ══ HEADER ══ */
+        header {
+            background: linear-gradient(90deg, #1e3a8a, #1d4ed8, #2563eb);
+            color: white;
+            padding: 0 2rem;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 12px rgba(29,78,216,0.4);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-icon { font-size: 1.5rem; }
+
+        .header-title {
+            font-size: 1rem;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        .header-sub {
+            font-size: 0.68rem;
+            opacity: 0.75;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 0.6rem;
+        }
+
+        .hstat {
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.25);
+            border-radius: 99px;
+            padding: 4px 14px;
+            font-size: 0.75rem;
+        }
+
+        .hstat strong { font-weight: 800; }
+
+        /* ══ KARTU STATISTIK ══ */
+        .stats-section {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+        }
+
+        .stat-card {
+            background: white;
+            border: 1.5px solid #bfdbfe;
+            border-radius: 12px;
+            padding: 1rem 1.4rem;
+            box-shadow: 0 2px 10px rgba(37,99,235,0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(37,99,235,0.15);
+        }
+
+        .sc-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #2563eb;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 6px;
+        }
+
+        .sc-value {
+            font-size: 1.9rem;
+            font-weight: 800;
+            color: #1d4ed8;
+            line-height: 1;
+        }
+
+        .sc-sub {
+            font-size: 0.72rem;
+            color: #3b82f6;
+            margin-top: 3px;
+        }
+
+        /* ══ JUDUL PETA ══ */
+        .map-title-area {
+            padding: 0 1.5rem 0.6rem;
+        }
+
+        .map-title {
+            font-size: 1rem;
+            font-weight: 800;
+            color: #1d4ed8;
+        }
+
+        .map-sub {
+            font-size: 0.78rem;
+            color: #2563eb;
+            opacity: 0.85;
+        }
+
+        /* ══ LAYOUT PETA ══ */
+        .map-layout {
+            display: flex;
+            gap: 1rem;
+            padding: 0 1.5rem;
+            height: 480px;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 240px;
+            flex-shrink: 0;
+            background: white;
+            border: 1.5px solid #bfdbfe;
+            border-radius: 12px;
+            padding: 0.9rem;
+            overflow-y: auto;
+            box-shadow: 0 2px 10px rgba(37,99,235,0.08);
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        #search-input {
+            width: 100%;
+            padding: 0.48rem 0.75rem;
+            border: 1.5px solid #bfdbfe;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-family: inherit;
+            outline: none;
+            background: #eff6ff;
+            margin-bottom: 0.5rem;
+            transition: border-color 0.2s;
+        }
+
+        #search-input:focus { border-color: #2563eb; }
+
+        .sb-label {
+            font-size: 0.65rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #2563eb;
+            border-bottom: 1.5px solid #dbeafe;
+            padding-bottom: 0.3rem;
+            margin: 0.6rem 0 0.4rem;
+        }
+
+        .sb-label:first-of-type { margin-top: 0; }
+
+        /* Tombol basemap */
+        .btn-group { display: flex; gap: 4px; }
+
+        .map-btn {
+            flex: 1;
+            padding: 0.34rem 0.2rem;
+            font-size: 0.74rem;
+            font-family: inherit;
+            font-weight: 600;
+            border: 1.5px solid #bfdbfe;
+            border-radius: 7px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .map-btn:hover  { border-color: #2563eb; color: #1d4ed8; background: #eff6ff; }
+        .map-btn.active { background: #1d4ed8; color: white; border-color: #1d4ed8; }
+
+        /* Daftar sekolah */
+        #school-list { list-style: none; display: flex; flex-direction: column; gap: 2px; }
+
+        #school-list li {
+            padding: 0.42rem 0.55rem;
+            border-radius: 7px;
+            font-size: 0.78rem;
+            cursor: pointer;
+            border: 1.5px solid transparent;
+            line-height: 1.4;
+            transition: all 0.18s;
+        }
+
+        #school-list li:hover  { background: #eff6ff; border-color: #93c5fd; }
+        #school-list li.aktif  { background: #dbeafe; border-color: #2563eb; font-weight: 700; color: #1d4ed8; }
+        #school-list li.sembunyi { display: none; }
+
+        #school-list li .li-kec {
+            font-size: 0.66rem;
+            color: #3b82f6;
+            display: block;
+            margin-top: 1px;
+        }
+
+        /* Legenda */
+        .sb-legend { margin-top: auto; padding-top: 0.7rem; border-top: 1px solid #dbeafe; }
+
+        .leg-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.73rem;
+            color: #2563eb;
+            margin-bottom: 3px;
+        }
+
+        .leg-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+        /* Area peta */
+        .map-wrap {
+            flex: 1;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1.5px solid #bfdbfe;
+            box-shadow: 0 2px 10px rgba(37,99,235,0.08);
+            position: relative;
+        }
+
+        #map { width: 100%; height: 100%; }
+
+        /* Koordinat bar */
+        #koordinat-bar {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(255,255,255,0.93);
+            border: 1px solid #bfdbfe;
+            border-radius: 99px;
+            padding: 4px 12px;
+            font-size: 0.7rem;
+            color: #1d4ed8;
+            font-weight: 600;
+            z-index: 500;
+            pointer-events: none;
+        }
+
+        /* Panel detail */
+        #detail-panel {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 250px;
+            background: white;
+            border-radius: 12px;
+            border: 1.5px solid #bfdbfe;
+            box-shadow: 0 6px 24px rgba(37,99,235,0.2);
+            z-index: 600;
+            overflow: hidden;
+            animation: slideIn 0.22s ease;
+        }
+
+        #detail-panel.hidden { display: none; }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .dp-head {
+            background: linear-gradient(135deg, #1e3a8a, #1d4ed8);
+            padding: 0.85rem 1rem;
+            color: white;
+            position: relative;
+        }
+
+        .dp-head .dp-icon { font-size: 1.2rem; margin-bottom: 3px; }
+        .dp-head .dp-nama { font-size: 0.85rem; font-weight: 800; line-height: 1.25; padding-right: 28px; }
+
+        #close-panel {
+            position: absolute;
+            top: 8px; right: 8px;
+            background: rgba(255,255,255,0.2);
+            border: none; border-radius: 5px;
+            padding: 2px 8px; font-size: 0.72rem;
+            cursor: pointer; color: white;
+        }
+
+        #close-panel:hover { background: rgba(255,255,255,0.35); }
+
+        .dp-body { padding: 0.85rem 1rem; }
+
+        .dp-row {
+            display: flex;
+            gap: 6px;
+            font-size: 0.78rem;
+            padding: 0.26rem 0;
+            border-bottom: 1px solid #eff6ff;
+            align-items: flex-start;
+        }
+
+        .dp-row:last-child { border-bottom: none; }
+        .dp-lbl { color: #3b82f6; font-size: 0.68rem; width: 80px; flex-shrink: 0; }
+        .dp-val { font-weight: 600; color: #1e3a8a; }
+
+        /* ══ TABEL ══ */
+        .tabel-section { padding: 1rem 1.5rem 2rem; }
+
+        .tabel-title {
+            font-size: 1rem;
+            font-weight: 800;
+            color: #1d4ed8;
+            margin-bottom: 0.7rem;
+        }
+
+        .tbl-wrap {
+            background: white;
+            border: 1.5px solid #bfdbfe;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(37,99,235,0.08);
+        }
+
+        table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+
+        thead th {
+            background: linear-gradient(90deg, #1e3a8a, #1d4ed8);
+            color: white;
+            padding: 0.65rem 1rem;
+            text-align: left;
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        tbody td { padding: 0.56rem 1rem; border-bottom: 1px solid #dbeafe; }
+        tbody tr:last-child td { border-bottom: none; }
+        tbody tr:nth-child(even) td { background: #eff6ff; }
+        tbody tr:hover td { background: #dbeafe; cursor: pointer; }
+
+        /* Popup Leaflet */
+        .leaflet-popup-content-wrapper {
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(37,99,235,0.2);
+            padding: 0;
+        }
+
+        .leaflet-popup-content { margin: 0; font-family: 'Plus Jakarta Sans', Arial, sans-serif; }
+
+        .lf-popup { padding: 10px 14px; }
+        .lf-popup strong { color: #1d4ed8; font-size: 0.86rem; display: block; margin-bottom: 2px; }
+        .lf-popup span   { font-size: 0.76rem; color: #2563eb; }
+
+        /* Responsive */
+        @media (max-width: 700px) {
+            .stats-section { grid-template-columns: 1fr; }
+            .map-layout    { flex-direction: column; height: auto; }
+            .sidebar       { width: 100%; height: 160px; }
+            .map-wrap      { height: 380px; }
+            .header-stats  { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ══ HEADER ══ -->
+    <header>
+        <div class="header-left">
+            <span class="header-icon">🏫</span>
+            <div>
+                <div class="header-title">WebGIS Persebaran SMA Negeri</div>
+                <div class="header-sub">Kabupaten Lampung Tengah</div>
+            </div>
+        </div>
+        <div class="header-stats">
+            <div class="hstat">Total: <strong id="h-total">24</strong> Sekolah</div>
+            <div class="hstat">Kecamatan: <strong id="h-kec">—</strong></div>
+        </div>
+    </header>
+
+    <!-- ══ KARTU STATISTIK ══ -->
+    <div class="stats-section">
+        <div class="stat-card">
+            <div class="sc-label">🏫 Total SMA Negeri</div>
+            <div class="sc-value" id="total-sekolah">24</div>
+            <div class="sc-sub">Sekolah Negeri</div>
+        </div>
+        <div class="stat-card">
+            <div class="sc-label">📍 Total Kecamatan</div>
+            <div class="sc-value" id="total-kec">—</div>
+            <div class="sc-sub">Kecamatan terjangkau</div>
+        </div>
+        <div class="stat-card">
+            <div class="sc-label">🎓 Jenis Sekolah</div>
+            <div class="sc-value">SMA</div>
+            <div class="sc-sub">Negeri se-Lampung Tengah</div>
+        </div>
+    </div>
+
+    <!-- ══ JUDUL PETA ══ -->
+    <div class="map-title-area">
+        <div class="map-title">🗺️ Peta Persebaran SMA Negeri Lampung Tengah</div>
+        <div class="map-sub">Klik marker untuk detail sekolah · Klik nama di sidebar untuk zoom ke lokasi</div>
+    </div>
+
+    <!-- ══ LAYOUT PETA ══ -->
+    <div class="map-layout">
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <input type="text" id="search-input" placeholder="🔍 Cari nama sekolah..."/>
+
+            <div class="sb-label">🗺️ Basemap</div>
+            <div class="btn-group">
+                <button class="map-btn active" data-layer="street">Street</button>
+                <button class="map-btn" data-layer="satelit">Satelit</button>
+                <button class="map-btn" data-layer="topo">Topo</button>
+            </div>
+
+            <div class="sb-label">🏫 Daftar Sekolah</div>
+            <ul id="school-list"></ul>
+
+            <div class="sb-legend">
+                <div class="leg-item"><span class="leg-dot" style="background:#1d4ed8"></span>Lokasi SMA Negeri</div>
+                <div class="leg-item"><span class="leg-dot" style="background:#f59e0b"></span>Sekolah Dipilih</div>
+            </div>
+        </div>
+
+        <!-- Peta -->
+        <div class="map-wrap">
+            <div id="map"></div>
+            <div id="koordinat-bar">📌 Klik peta untuk koordinat</div>
+
+            <!-- Panel Detail -->
+            <div id="detail-panel" class="hidden">
+                <div class="dp-head">
+                    <div class="dp-icon">🏫</div>
+                    <div class="dp-nama" id="dp-nama">—</div>
+                    <button id="close-panel">✕</button>
+                </div>
+                <div class="dp-body" id="dp-body"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ══ TABEL ══ -->
+    <div class="tabel-section">
+        <div class="tabel-title">📋 Tabel Data SMA Negeri Lampung Tengah</div>
+        <div class="tbl-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Nama Sekolah</th>
+                        <th>Kecamatan</th>
+                        <th>Latitude</th>
+                        <th>Longitude</th>
+                    </tr>
+                </thead>
+                <tbody id="tabel-body"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ══ LEAFLET JS ══ -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+
+        // ── 1. DATA SMA NEGERI LAMPUNG TENGAH ──
+        var dataSekolah = [
+            { no:1,  nama:"SMA Negeri 1 Gunung Sugih",    kecamatan:"Gunung Sugih",    lat:-4.9832, lng:105.2048 },
+            { no:2,  nama:"SMA Negeri 1 Terbanggi Besar", kecamatan:"Terbanggi Besar", lat:-4.9832, lng:105.2116 },
+            { no:3,  nama:"SMA Negeri 1 Kalirejo",         kecamatan:"Kalirejo",        lat:-5.2005, lng:104.9639 },
+            { no:4,  nama:"SMA Negeri 1 Seputih Banyak",  kecamatan:"Seputih Banyak",  lat:-4.8433, lng:105.4446 },
+            { no:5,  nama:"SMA Negeri 1 Kota Gajah",      kecamatan:"Kota Gajah",      lat:-4.9835, lng:105.3295 },
+            { no:6,  nama:"SMA Negeri 1 Seputih Raman",   kecamatan:"Seputih Raman",   lat:-4.8999, lng:105.3832 },
+            { no:7,  nama:"SMA Negeri 1 Punggur",          kecamatan:"Punggur",         lat:-5.0721, lng:105.2812 },
+            { no:8,  nama:"SMA Negeri 1 Trimurjo",         kecamatan:"Trimurjo",        lat:-5.1150, lng:105.2523 },
+            { no:9,  nama:"SMA Negeri 1 Padang Ratu",      kecamatan:"Padang Ratu",     lat:-5.0628, lng:104.9740 },
+            { no:10, nama:"SMA Negeri 1 Bangunrejo",       kecamatan:"Bangunrejo",      lat:-5.1678, lng:105.0132 },
+            { no:11, nama:"SMA Negeri 1 Pubian",           kecamatan:"Pubian",          lat:-5.1004, lng:104.9667 },
+            { no:12, nama:"SMA Negeri 1 Sendang Agung",    kecamatan:"Sendang Agung",   lat:-5.2029, lng:104.9001 },
+            { no:13, nama:"SMA Negeri 1 Anak Tuha",        kecamatan:"Anak Tuha",       lat:-4.9737, lng:105.0668 },
+            { no:14, nama:"SMA Negeri 1 Seputih Agung",    kecamatan:"Seputih Agung",   lat:-4.9575, lng:105.1597 },
+            { no:15, nama:"SMA Negeri 1 Bandar Mataram",   kecamatan:"Bandar Mataram",  lat:-4.8734, lng:105.4620 },
+            { no:16, nama:"SMA Negeri 1 Bumi Nabung",      kecamatan:"Bumi Nabung",     lat:-4.6926, lng:105.5537 },
+            { no:17, nama:"SMA Negeri 1 Sendang Agung",    kecamatan:"Sendang Agung",   lat:-5.2029, lng:104.9001 },
+            { no:18, nama:"SMA Negeri 1 Way Pengubuan",    kecamatan:"Way Pengubuan",   lat:-4.8734, lng:105.0678 },
+            { no:19, nama:"SMA Negeri 1 Anak Ratu Aji",    kecamatan:"Anak Ratu Aji",   lat:-4.9293, lng:104.9377 },
+            { no:20, nama:"SMA Negeri 1 Terusan Nunyai",   kecamatan:"Terusan Nunyai",  lat:-4.7661, lng:105.2222 },
+            { no:21, nama:"SMA Negeri 1 Seputih Mataram",  kecamatan:"Seputih Mataram", lat:-4.8495, lng:105.3096 },
+            { no:22, nama:"SMA Negeri 1 Rumbia",           kecamatan:"Rumbia",          lat:-4.7862, lng:105.5534 },
+            { no:23, nama:"SMA Negeri 1 Putra Rumbia",     kecamatan:"Putra Rumbia",    lat:-4.7862, lng:105.5534 },
+            { no:24, nama:"SMA Negeri Way Seputih",        kecamatan:"Way Seputih",     lat:-4.8039, lng:105.4141 },
+        ];
+
+        // ── 2. INISIALISASI PETA ──
+        var map = L.map('map', {
+            center: [-4.9500, 105.2000],
+            zoom: 10,
+            zoomControl: false
+        });
+
+        L.control.zoom({ position: 'bottomright' }).addTo(map);
+        L.control.scale({ imperial: false, position: 'bottomright' }).addTo(map);
+
+        // ── 3. BASEMAP ──
+        var basemaps = {
+            street: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap', maxZoom: 19
+            }),
+            satelit: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                attribution: '© Esri', maxZoom: 19
+            }),
+            topo: L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenTopoMap', maxZoom: 17
+            })
+        };
+
+        basemaps.street.addTo(map);
+        var layerAktif = 'street';
+
+        // Tombol ganti basemap
+        document.querySelectorAll('.map-btn').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var pilihan = btn.dataset.layer;
+                if (pilihan === layerAktif) return;
+                map.removeLayer(basemaps[layerAktif]);
+                basemaps[pilihan].addTo(map);
+                layerAktif = pilihan;
+                document.querySelectorAll('.map-btn').forEach(function(b) { b.classList.remove('active'); });
+                btn.classList.add('active');
+            });
+        });
+
+        // ── 4. CUSTOM MARKER ──
+        function buatIcon(aktif) {
+            var warna = aktif ? '#f59e0b' : '#2563eb';
+            return L.divIcon({
+                className: '',
+                html: '<div style="width:28px;height:28px;background:' + warna + ';border:3px solid white;border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 2px 8px rgba(0,0,0,0.3);"></div>',
+                iconSize:    [28, 28],
+                iconAnchor:  [14, 28],
+                popupAnchor: [0, -30]
+            });
+        }
+
+        // ── 5. RENDER MARKER, SIDEBAR & TABEL ──
+        var semuaMarker = [];
+        var markerAktif = null;
+        var listEl      = document.getElementById('school-list');
+        var tabelEl     = document.getElementById('tabel-body');
+
+        // Hitung kecamatan unik
+        var kecUnik = dataSekolah.map(function(s) { return s.kecamatan; })
+            .filter(function(v, i, a) { return a.indexOf(v) === i; });
+
+        document.getElementById('total-kec').textContent = kecUnik.length;
+        document.getElementById('h-kec').textContent     = kecUnik.length;
+
+        dataSekolah.forEach(function(s, i) {
+
+            // Marker
+            var marker = L.marker([s.lat, s.lng], { icon: buatIcon(false) })
+                .addTo(map)
+                .bindPopup(
+                    '<div class="lf-popup">' +
+                    '<strong>🏫 ' + s.nama + '</strong>' +
+                    '<span>📍 Kec. ' + s.kecamatan + '</span>' +
+                    '</div>'
+                );
+
+            // Klik marker → panel detail
+            marker.on('click', function() {
+                semuaMarker.forEach(function(m) { m.setIcon(buatIcon(false)); });
+                marker.setIcon(buatIcon(true));
+                markerAktif = marker;
+
+                // Highlight sidebar
+                document.querySelectorAll('#school-list li').forEach(function(li) { li.classList.remove('aktif'); });
+                var liAktif = document.querySelector('#school-list li[data-i="' + i + '"]');
+                if (liAktif) {
+                    liAktif.classList.add('aktif');
+                    liAktif.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+
+                // Isi panel detail
+                document.getElementById('dp-nama').textContent = s.nama;
+                document.getElementById('dp-body').innerHTML =
+                    '<div class="dp-row"><span class="dp-lbl">No. Urut</span><span class="dp-val">'  + s.no        + '</span></div>' +
+                    '<div class="dp-row"><span class="dp-lbl">Kecamatan</span><span class="dp-val">' + s.kecamatan + '</span></div>' +
+                    '<div class="dp-row"><span class="dp-lbl">Latitude</span><span class="dp-val">'  + s.lat       + '</span></div>' +
+                    '<div class="dp-row"><span class="dp-lbl">Longitude</span><span class="dp-val">' + s.lng       + '</span></div>';
+
+                document.getElementById('detail-panel').classList.remove('hidden');
+            });
+
+            semuaMarker.push(marker);
+
+            // Item sidebar
+            var li = document.createElement('li');
+            li.dataset.i = i;
+            li.innerHTML = '🏫 ' + s.nama + '<span class="li-kec">Kec. ' + s.kecamatan + '</span>';
+            li.addEventListener('click', function() {
+                map.setView([s.lat, s.lng], 15);
+                marker.openPopup();
+                marker.fire('click');
+            });
+            listEl.appendChild(li);
+
+            // Baris tabel
+            tabelEl.innerHTML +=
+                '<tr>' +
+                '<td>' + s.no + '</td>' +
+                '<td><strong>' + s.nama + '</strong></td>' +
+                '<td>' + s.kecamatan + '</td>' +
+                '<td>' + s.lat + '</td>' +
+                '<td>' + s.lng + '</td>' +
+                '</tr>';
+        });
+
+        // Fit semua marker
+        var group = new L.featureGroup(semuaMarker);
+        map.fitBounds(group.getBounds().pad(0.12));
+
+        // ── 6. TUTUP PANEL ──
+        document.getElementById('close-panel').addEventListener('click', function() {
+            document.getElementById('detail-panel').classList.add('hidden');
+            if (markerAktif) { markerAktif.setIcon(buatIcon(false)); markerAktif = null; }
+            document.querySelectorAll('#school-list li').forEach(function(li) { li.classList.remove('aktif'); });
+        });
+
+        // ── 7. PENCARIAN ──
+        document.getElementById('search-input').addEventListener('input', function() {
+            var keyword = this.value.toLowerCase();
+            document.querySelectorAll('#school-list li').forEach(function(li) {
+                li.classList.toggle('sembunyi', !li.textContent.toLowerCase().includes(keyword));
+            });
+        });
+
+        // ── 8. KOORDINAT KLIK PETA ──
+        map.on('click', function(e) {
+            document.getElementById('koordinat-bar').textContent =
+                '📌 Lat: ' + e.latlng.lat.toFixed(5) + ' | Lng: ' + e.latlng.lng.toFixed(5);
+        });
+
+    </script>
+</body>
+</html>

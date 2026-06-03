@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard Profil Mahasiswa</title>
+
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body{
+      background: linear-gradient(135deg, #cdefff, #e8f8ff);
+      min-height:100vh;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      overflow:hidden;
+      position:relative;
+    }
+
+    .bubble{
+      position:absolute;
+      border-radius:50%;
+      background:rgba(255,255,255,0.4);
+      animation: float 10s infinite ease-in-out;
+    }
+
+    .bubble:nth-child(1){
+      width:120px;
+      height:120px;
+      top:10%;
+      left:5%;
+    }
+
+    .bubble:nth-child(2){
+      width:80px;
+      height:80px;
+      bottom:15%;
+      right:10%;
+      animation-duration:12s;
+    }
+
+    .bubble:nth-child(3){
+      width:60px;
+      height:60px;
+      top:70%;
+      left:15%;
+      animation-duration:8s;
+    }
+
+    @keyframes float{
+      0%{transform:translateY(0px);}
+      50%{transform:translateY(-20px);}
+      100%{transform:translateY(0px);}
+    }
+
+    .card{
+      width:850px;
+      background:white;
+      border-radius:30px;
+      overflow:hidden;
+      display:flex;
+      box-shadow:0 15px 35px rgba(0,0,0,0.15);
+      z-index:2;
+    }
+
+    .left{
+      width:40%;
+      background:linear-gradient(180deg,#9bdcff,#7ccfff);
+      padding:40px 20px;
+      text-align:center;
+      color:white;
+      position:relative;
+    }
+
+    .left::before{
+      content:'';
+      position:absolute;
+      width:250px;
+      height:250px;
+      background:rgba(255,255,255,0.2);
+      border-radius:50%;
+      top:-80px;
+      right:-80px;
+    }
+
+    .profile-img{
+      width:220px;
+      height:220px;
+      border-radius:20px;
+      object-fit:cover;
+      border:6px solid white;
+      box-shadow:0 10px 20px rgba(0,0,0,0.2);
+      margin-bottom:20px;
+    }
+
+    .left h2{
+      font-size:28px;
+      margin-bottom:10px;
+    }
+
+    .left p{
+      font-size:16px;
+      opacity:0.9;
+    }
+
+    .right{
+      width:60%;
+      padding:50px;
+      position:relative;
+    }
+
+    .right h1{
+      color:#4aaee8;
+      margin-bottom:25px;
+      font-size:36px;
+    }
+
+    .info-box{
+      background:#f2fbff;
+      padding:18px 20px;
+      border-radius:15px;
+      margin-bottom:18px;
+      border-left:6px solid #7ccfff;
+      transition:0.3s;
+    }
+
+    .info-box:hover{
+      transform:translateX(8px);
+      background:#dff5ff;
+    }
+
+    .label{
+      font-size:14px;
+      color:#7a7a7a;
+      margin-bottom:5px;
+    }
+
+    .value{
+      font-size:20px;
+      font-weight:bold;
+      color:#333;
+    }
+
+    .hiasan{
+      margin-top:25px;
+      display:flex;
+      gap:10px;
+    }
+
+    .hiasan span{
+      width:18px;
+      height:18px;
+      border-radius:50%;
+      background:#9bdcff;
+      animation: blink 2s infinite;
+    }
+
+    .hiasan span:nth-child(2){
+      animation-delay:0.5s;
+    }
+
+    .hiasan span:nth-child(3){
+      animation-delay:1s;
+    }
+
+    @keyframes blink{
+      0%{opacity:0.3;}
+      50%{opacity:1;}
+      100%{opacity:0.3;}
+    }
+
+    .footer{
+      margin-top:30px;
+      font-size:14px;
+      color:#888;
+    }
+
+    @media(max-width:900px){
+      .card{
+        flex-direction:column;
+        width:90%;
+      }
+
+      .left, .right{
+        width:100%;
+      }
+
+      .right{
+        padding:30px;
+      }
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="bubble"></div>
+  <div class="bubble"></div>
+  <div class="bubble"></div>
+
+  <div class="card">
+
+    <div class="left">
+      <img
+        src="ASSET/IMG/foto.jpg.jpg"
+        alt="Foto Mahasiswa" class="profile-img">
+
+      <h2>Merly Lucyana</h2>
+      <p>Mahasiswa Aktif</p>
+    </div>
+
+    <div class="right">
+
+      <h1>Dashboard Profil</h1>
+
+      <div class="info-box">
+        <div class="label">Nama Lengkap</div>
+        <div class="value">Merly Lucyana</div>
+      </div>
+
+      <div class="info-box">
+        <div class="label">NPM</div>
+        <div class="value">2313034061</div>
+      </div>
+
+      <div class="info-box">
+        <div class="label">Program Studi</div>
+        <div class="value">Pendidikan Geografi</div>
+      </div>
+
+      <div class="info-box">
+        <div class="label">Universitas</div>
+        <div class="value">Universitas Lampung</div>
+      </div>
+
+      <div class="hiasan">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+
+      <div class="footer">
+        © 2026 Dashboard Profil Mahasiswa
+      </div>
+
+    </div>
+
+  </div>
+
+</body>
+</html>
